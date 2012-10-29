@@ -22,7 +22,7 @@ public class CompleteSendEventListener implements ICompleteSendEventListener
 	public void completeSendEventHandler(CompleteSendEvent event) 
 	{
 		streamOut.streamOut(event.send);
-		dataController.updateText(event.send, red);
+		dataController.updateText(event.send, red); // need to change this if you want to see what is sent
 	}
 }
 

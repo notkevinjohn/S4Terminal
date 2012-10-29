@@ -15,12 +15,26 @@ import Componets.SendButton;
 import Componets.SendLineTextField;
 import Componets.StartStopButton;
 import Componets.TerminalText;
+import Data.PayloadData;
+
 import java.awt.Color;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import org.jfree.*;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.general.Dataset;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+
+import javax.swing.JEditorPane;
 
 public class Terminal 
 {
@@ -36,6 +50,19 @@ public class Terminal
 	public StyledDocument doc;
 	public SendLineTextField sendLine;
 	public String deviceName;
+	public JFreeChart jFreeChart;
+	public double x=0.0;
+	public double y=0.0;
+	public XYSeries series;
+	public ChartPanel CP;
+	public JFreeChart chart;
+	private SimpleAttributeSet green = new SimpleAttributeSet();
+	private SimpleAttributeSet blue = new SimpleAttributeSet();
+	private int time;
+	public boolean enableGraph = true;
+	public TimeGraph timeGraph;
+	
+	
 	public Terminal(String deviceName)
 	{
 		this.deviceName = deviceName;
@@ -80,14 +107,14 @@ public class Terminal
 		panel = new JPanel();
 		panel.setBackground(Color.WHITE);
 		panel.setSize(622,592);
-		panel.setLocation(0,0);
+		panel.setLocation(10,11);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-
+			
 		scrollPane = new JScrollPane();
-		scrollPane.setSize(602,535);
-		scrollPane.setLocation(10,10);
+		scrollPane.setSize(602,534);
+		scrollPane.setLocation(10,11);
 		panel.add(scrollPane);
 		
 		final int scrollPaneX = panel.getWidth()-scrollPane.getWidth();
@@ -108,6 +135,8 @@ public class Terminal
 		panel.add(chckbxAutoscroll);
 		chckbxAutoscroll.setActionListener();
 		terminalText.setActionListener(terminalText,chckbxAutoscroll);
+		
+
 		
 		
 
@@ -184,19 +213,46 @@ public class Terminal
 				System.exit(0);
 			}
 		});	
+		
+		
+		timeGraph = new TimeGraph();
 }
 
-	public void updateText(final String updateString, SimpleAttributeSet type)
+	public void updateText(String _StreamInString, SimpleAttributeSet type)
 	{
+		
+		
 		try
 		{
-			doc.insertString(doc.getLength(),updateString, type);
-			
-			System.out.print(updateString);
+			doc.insertString(doc.getLength(),_StreamInString, type);
+			//System.out.print(updateString);
+		}
+		catch(Exception e) 
+		{ 
+			System.out.println(e);
+		}	
+	}
+	
+	public void updatePayloadData(PayloadData payloadData)
+	{
+		
+		
+		try
+		{
+			String tempGPS = payloadData.gpsData;
+			String tempSensor = payloadData.scienceData + "\n";
+			doc.insertString(doc.getLength(),tempGPS, blue);
+			doc.insertString(doc.getLength(), tempSensor, green);
+			//System.out.print(updateString);
 		}
 		catch(Exception e) 
 		{ 
 			System.out.println(e);
 		}
+		if(enableGraph == true)
+		{
+			timeGraph.updatePayloadData(payloadData);
+		}
+			
 	}
 }

@@ -97,11 +97,15 @@ public class DataController extends Thread
 							
 							if(payloadDataVector != null)
 							{
-								updateText(payloadDataVector.lastElement().gpsData , blue);
-								String tempString = payloadDataVector.lastElement().scienceData;
-								tempString += '\n';
+//								updateText(payloadDataVector.lastElement().gpsData , blue);
+//								String tempString = payloadDataVector.lastElement().scienceData;
+//								tempString += '\n';
+//								
+//								updateText(tempString, blue);
 								
-								updateText(tempString, blue);
+								
+								updatePayloadData(payloadDataVector.lastElement());
+								
 							}
 					  }
 				}
@@ -140,12 +144,22 @@ public class DataController extends Thread
 			try { Thread.sleep(10); } catch(InterruptedException e) { /* we tried */}
 		}
 	}
-	
-	public void updateText(final String _streamInString, final SimpleAttributeSet type) {
+
+
+	public void updateText(final String _StreamInString, final SimpleAttributeSet type) {
 		  SwingUtilities.invokeLater(new Runnable() {
 		    public void run() {
-		    	 terminal.updateText(_streamInString,type);
-		    	 wiFiWriter.recieveText(_streamInString);
+		    	 terminal.updateText(_StreamInString,type);
+		    	// wiFiWriter.recieveText(_streamInString);
+		    }
+		  });
+		}
+	
+	public void updatePayloadData(final PayloadData payloadData) {
+		  SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		    	 terminal.updatePayloadData(payloadData);
+		    	 //wiFiWriter.recieveText(_streamInString);
 		    }
 		  });
 		}
