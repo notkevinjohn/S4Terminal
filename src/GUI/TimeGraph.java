@@ -1,6 +1,7 @@
 package GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -10,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -77,6 +79,9 @@ public class TimeGraph extends JFrame {
 		
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		dataset.addSeries(series);
+				
+		ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+		
 		chart = ChartFactory.createXYLineChart(
 				   "XY Chart", // Title
 				   "x-axis", // x-axis Label
@@ -87,7 +92,13 @@ public class TimeGraph extends JFrame {
 				   false, // Use tooltips
 				   false // Configure chart to generate URLs?
 				);
+		
+		chart.setBackgroundPaint(Color.white);
+		
+//		JPanel panel = new JPanel();
+//		contentPane.getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
+		
 	
 		CP = new ChartPanel(chart);
 		CP.setBorder(null);
