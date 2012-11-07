@@ -16,6 +16,7 @@ import Componets.SendLineTextField;
 import Componets.StartStopButton;
 import Componets.TerminalText;
 import Data.PayloadData;
+import Graphs.TimeGraph;
 
 import java.awt.Color;
 import java.awt.event.ComponentAdapter;
