@@ -2,6 +2,7 @@ package GUI;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -11,34 +12,29 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyledDocument;
 import javax.swing.JScrollPane;
 import Componets.AutoscrollCheckBox;
+import Componets.GraphButtonMenuItem;
 import Componets.SendButton;
 import Componets.SendLineTextField;
 import Componets.StartStopButton;
 import Componets.TerminalText;
 import Data.PayloadData;
+import Events.IPayloadUpdateUpdateEventListener;
+import Events.PayloadUpdateEvent;
 import Graphs.TimeGraph;
-
 import java.awt.Color;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.general.Dataset;
-import org.jfree.data.xy.DefaultXYDataset;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
-
-import javax.swing.JEditorPane;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
 
 public class Terminal 
 {
+	public static javax.swing.event.EventListenerList listenerList = new javax.swing.event.EventListenerList();
 	private JScrollPane scrollPane;
 	private JPanel panel;
 	private JPanel contentPane;
@@ -59,11 +55,12 @@ public class Terminal
 	public JFreeChart chart;
 	private SimpleAttributeSet green = new SimpleAttributeSet();
 	private SimpleAttributeSet blue = new SimpleAttributeSet();
-	private int time;
 	public boolean enableGraph = true;
 	public TimeGraph timeGraph;
-	
-	
+	private JMenuBar menuBar;
+	private JMenu mnGraph;
+	private boolean graphSet = false;
+	private ButtonGroup graph;
 	public Terminal(String deviceName)
 	{
 		this.deviceName = deviceName;
@@ -107,15 +104,15 @@ public class Terminal
 		
 		panel = new JPanel();
 		panel.setBackground(Color.WHITE);
-		panel.setSize(622,592);
-		panel.setLocation(10,11);
+		panel.setSize(632,603);
+		panel.setLocation(0,0);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
 			
 		scrollPane = new JScrollPane();
-		scrollPane.setSize(602,534);
-		scrollPane.setLocation(10,11);
+		scrollPane.setSize(622,526);
+		scrollPane.setLocation(0,23);
 		panel.add(scrollPane);
 		
 		final int scrollPaneX = panel.getWidth()-scrollPane.getWidth();
@@ -132,7 +129,7 @@ public class Terminal
 		chckbxAutoscroll.setBackground(Color.WHITE);
 		chckbxAutoscroll.setSelected(true);
 		chckbxAutoscroll.setSize(92,23);
-		chckbxAutoscroll.setLocation(530,556);
+		chckbxAutoscroll.setLocation(520,556);
 		panel.add(chckbxAutoscroll);
 		chckbxAutoscroll.setActionListener();
 		terminalText.setActionListener(terminalText,chckbxAutoscroll);
@@ -142,7 +139,7 @@ public class Terminal
 		
 
 		sendLine = new SendLineTextField();
-		sendLine.setSize(344,23);
+		sendLine.setSize(334,23);
 		sendLine.setLocation(10,556);
 		panel.add(sendLine);
 		sendLine.setActionListener();
@@ -154,7 +151,7 @@ public class Terminal
 		
 		btnSend = new SendButton(sendLine);
 		btnSend.setSize(75,23);
-		btnSend.setLocation(364,556);
+		btnSend.setLocation(354,556);
 		panel.add(btnSend);
 		btnSend.setActionListener();
 		
@@ -163,9 +160,18 @@ public class Terminal
 		
 		btnStartStop = new StartStopButton();
 		btnStartStop.setSize(75,23);
-		btnStartStop.setLocation(449,556);
+		btnStartStop.setLocation(439,556);
 		panel.add(btnStartStop);
+		
+		menuBar = new JMenuBar();
+		menuBar.setBounds(0, 0, 622, 21);
+		panel.add(menuBar);
+		
+		mnGraph = new JMenu("Graph");
+		menuBar.add(mnGraph);
 		btnStartStop.setActionListener();
+		
+		
 		
 		final int btnStartStopX = panel.getWidth()-btnStartStop.getX();
 		final int btnStartStopY = panel.getHeight()-btnStartStop.getY();
@@ -216,7 +222,7 @@ public class Terminal
 		});	
 		
 		
-		timeGraph = new TimeGraph();
+		//timeGraph = new TimeGraph();
 }
 
 	public void updateText(String _StreamInString, SimpleAttributeSet type)
@@ -237,6 +243,43 @@ public class Terminal
 	public void updatePayloadData(PayloadData payloadData)
 	{
 		
+		if(!graphSet)
+		{
+			int commas = 0;
+			for(int i = 0; i < payloadData.scienceData.length(); i++)
+			{
+				if(payloadData.scienceData.charAt(i) == ',')
+					commas++;
+			}
+			
+			graph = new ButtonGroup();
+			int start = 2;
+			int end = payloadData.scienceData.indexOf(',',2);
+			
+			for(int j = 0; j < commas/2; j++)
+			{
+				
+				String tempString = payloadData.scienceData.substring(start, end);
+				GraphButtonMenuItem graphType = new GraphButtonMenuItem(this, tempString,j);
+				
+				start = payloadData.scienceData.indexOf(',', start)+1;
+				end = payloadData.scienceData.indexOf(',',start);
+				start = payloadData.scienceData.indexOf(',', start)+1;
+				end = payloadData.scienceData.indexOf(',',start);
+				
+				if(end <0)
+				{
+					end = payloadData.scienceData.length();
+				}
+				graphType.setActionListener();
+				graph.add(graphType);
+				mnGraph.add(graphType);
+				
+			}
+			graphSet = true;
+			//timeGraph = new TimeGraph(deviceName, deviceName, deviceName, 1);
+			
+		}
 		
 		try
 		{
@@ -252,8 +295,24 @@ public class Terminal
 		}
 		if(enableGraph == true)
 		{
-			timeGraph.updatePayloadData(payloadData);
+			//timeGraph.updatePayloadData(payloadData);
+		
+		
+		
+		PayloadUpdateEvent complete = new PayloadUpdateEvent(this, payloadData);
+		Object[] listeners = Terminal.listenerList.getListenerList(); 
+   		for (int i=0; i<listeners.length; i+=2) 
+   		{
+             if (listeners[i]==IPayloadUpdateUpdateEventListener.class)
+             {
+                 ((IPayloadUpdateUpdateEventListener)listeners[i+1]).PayloadUpdateUpdateEventHandeler(complete);
+             }
+        } 		 
 		}
-			
+	}
+	
+	public static void addPayloadUpdateEvent (IPayloadUpdateUpdateEventListener completePayloadUpdateEventListener)
+	{
+		listenerList.add(IPayloadUpdateUpdateEventListener.class, completePayloadUpdateEventListener);
 	}
 }

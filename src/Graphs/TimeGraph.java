@@ -2,12 +2,9 @@ package Graphs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -15,24 +12,28 @@ import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-
 import Data.PayloadData;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JMenu;
-import javax.swing.JRadioButtonMenuItem;
 
 public class TimeGraph extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3054937374800825011L;
 	private JPanel contentPane;
 	public XYSeries series;
 	public ChartPanel CP;
 	public JFreeChart chart;
 	public JFreeChart jFreeChart;
 	public String deviceName;
+	
 	public int time;
+	public int seriesCount;
+	public int seriesStart;
+	
 	public double y;
 	private JMenuBar menuBar;
 	private JMenu mnData;
@@ -48,16 +49,24 @@ public class TimeGraph extends JFrame {
 	public int dataPointCount = 0;
 	public int hasDeleted = 0;
 	public ButtonGroup dataTime;
-	
-	
+	public String title="";
+	public String xAxisLable="";
+	public String yAxisLable="";
+	public int sen_Value = 0;
 
 	/**
 	 * Create the frame.
 	 */
-	public TimeGraph() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 644, 410);
+	public TimeGraph(String title, String xAxisLable, String yAxisLable, int sen_Value) 
+	{
+		this.title = title;
+		this.xAxisLable = xAxisLable;
+		this.yAxisLable = yAxisLable;
+		this.sen_Value = sen_Value;
 		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 650, 420);
+		this.setVisible(true);
 		
 		
 		menuBar = new JMenuBar();
@@ -115,26 +124,23 @@ public class TimeGraph extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		this.setVisible(true);
+		
 		
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
 		
-		
 		series = new XYSeries("Data");
-		
 
-	
-		
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		dataset.addSeries(series);
-				
+		
+	
 		ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
 		
 		chart = ChartFactory.createXYLineChart(
-				   "XY Chart", // Title
-				   "x-axis", // x-axis Label
-				   "y-axis", // y-axis Label
+					title, // Title
+					xAxisLable, // x-axis Label
+					yAxisLable, // y-axis Label
 				   dataset, // Dataset
 				   PlotOrientation.VERTICAL, // Plot Orientation
 				   false, // Show Legend
@@ -148,7 +154,7 @@ public class TimeGraph extends JFrame {
 //		contentPane.getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
-	
+		
 		CP = new ChartPanel(chart);
 		CP.setBorder(null);
 		CP.setZoomAroundAnchor(true);
@@ -156,29 +162,60 @@ public class TimeGraph extends JFrame {
 		CP.setMouseZoomable(false);
 		CP.setRefreshBuffer(true);
 		CP.setVerticalAxisTrace(true);
-		CP.setBounds(0, 0, 618, 362);
+		CP.setBounds(0, 0, 600, 350);
 		
 		panel.add(CP);
 		panel.validate();
 		
 	}
 	
+	
+	
 	public void updatePayloadData(PayloadData payloadData)
 	{
 		
-		time = time + 1;
-		y = payloadData.Sen_1_Value;
-		series.add(time, y);
-		dataPointCount++;
+		seriesCount = seriesCount + 1;
+		y = sensorValue(payloadData);
+		series.add(seriesCount, y);
+		System.out.println(sen_Value);
 		
-		while(dataPointCount >= dataPointSet && dataPointSet >0)
-		{	
-			
+		if(seriesCount-seriesStart > dataPointSet && dataPointSet>0)
+		{
 			series.remove(0);
+			seriesStart++;
 		}
-		
-			
 		CP.validate();	
+	
+	}
+	public double sensorValue(PayloadData payloadData)
+	{
+		double data = 0;
+		switch (sen_Value)
+		{
+		case 0: data = payloadData.Sen_1_Value;
+				break;
+		case 1: data =  payloadData.Sen_2_Value;
+				break;
+		case 2: data =  payloadData.Sen_3_Value;
+				break;
+		case 3: data =  payloadData.Sen_4_Value;
+				break;
+		case 4: data =  payloadData.Sen_5_Value;
+				break;
+		case 5: data =  payloadData.Sen_6_Value;
+				break;
+		case 6: data =  payloadData.Sen_7_Value;
+				break;
+		case 7: data =  payloadData.Sen_8_Value;
+				break;
+		case 8: data =  payloadData.Sen_9_Value;
+				break;
+		case 9: data =  payloadData.Sen_10_Value;
+	    		break;
+		}
+		return data;
+		
+		
 	}
 	
 	
