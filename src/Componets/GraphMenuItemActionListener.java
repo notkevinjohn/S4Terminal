@@ -2,7 +2,7 @@ package Componets;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import Events.PayloadUpdateEventListener;
+import Events.PayloadUpdateGraphEventListener;
 import GUI.Terminal;
 import Graphs.TimeGraph;
 
@@ -26,7 +26,7 @@ public class GraphMenuItemActionListener implements ActionListener
 		String TempString = graphName + " vs. Time";
 		TimeGraph timeGraph = new TimeGraph(TempString, "Time (seconds)", graphName, sensorNumber);
 		
-		Terminal.addPayloadUpdateEvent(new PayloadUpdateEventListener(terminal, timeGraph));
+		Terminal.addPayloadUpdateEvent(new PayloadUpdateGraphEventListener(terminal, timeGraph));
 		
 		
 	}

@@ -5,23 +5,24 @@ import GUI.Terminal;
 import Graphs.TimeGraph;
 
 
-public class PayloadUpdateEventListener implements IPayloadUpdateUpdateEventListener
+public class PayloadUpdateGraphEventListener implements IPayloadUpdateUpdateGraphEventListener
 {
 	public  TimeGraph timeGraph;
 	public Terminal terminal;
 	public PayloadData payloadData;
+
 	
-	public PayloadUpdateEventListener (Terminal terminal, TimeGraph timeGraph)
+	public PayloadUpdateGraphEventListener (Terminal terminal, TimeGraph timeGraph)
 	{
 		this.terminal = terminal;
 		this.timeGraph = timeGraph;
-
 	}
 
-	public void PayloadUpdateUpdateEventHandeler(PayloadUpdateEvent event) 
+	public void PayloadUpdateUpdateEventHandeler(PayloadUpdateGraphEvent event) 
 	{
 		payloadData = event.payloadData;
 		timeGraph.updatePayloadData(payloadData);
+		
 		
 	}
 

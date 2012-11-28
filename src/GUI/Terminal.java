@@ -12,14 +12,18 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyledDocument;
 import javax.swing.JScrollPane;
 import Componets.AutoscrollCheckBox;
+import Componets.DataGUIMenuItem;
 import Componets.GraphButtonMenuItem;
 import Componets.SendButton;
 import Componets.SendLineTextField;
+import Componets.SetDataMenuItem;
 import Componets.StartStopButton;
 import Componets.TerminalText;
 import Data.PayloadData;
-import Events.IPayloadUpdateUpdateEventListener;
-import Events.PayloadUpdateEvent;
+import Events.IPayloadUpdateDataEventListener;
+import Events.IPayloadUpdateUpdateGraphEventListener;
+import Events.PayloadUpdataDataEvent;
+import Events.PayloadUpdateGraphEvent;
 import Graphs.TimeGraph;
 import java.awt.Color;
 import java.awt.event.ComponentAdapter;
@@ -31,6 +35,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeries;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class Terminal 
 {
@@ -61,6 +66,12 @@ public class Terminal
 	private JMenu mnGraph;
 	private boolean graphSet = false;
 	private ButtonGroup graph;
+	public boolean dataSet = false;
+	public JMenuItem mntmOpenGui;
+	public SetDataMenuItem setDataMenuItem;
+	public DataGUIMenuItem dataGUIMenuItem;
+
+	
 	public Terminal(String deviceName)
 	{
 		this.deviceName = deviceName;
@@ -111,8 +122,8 @@ public class Terminal
 		
 			
 		scrollPane = new JScrollPane();
-		scrollPane.setSize(622,526);
-		scrollPane.setLocation(0,23);
+		scrollPane.setSize(622,528);
+		scrollPane.setLocation(0,21);
 		panel.add(scrollPane);
 		
 		final int scrollPaneX = panel.getWidth()-scrollPane.getWidth();
@@ -169,6 +180,16 @@ public class Terminal
 		
 		mnGraph = new JMenu("Graph");
 		menuBar.add(mnGraph);
+		
+		JMenu mnData = new JMenu("Data");
+		menuBar.add(mnData);
+		
+		
+		dataGUIMenuItem = new DataGUIMenuItem(this,"Open GUI");
+		mnData.add(dataGUIMenuItem);
+	    dataGUIMenuItem.setActionListener();
+
+		
 		btnStartStop.setActionListener();
 		
 		
@@ -281,6 +302,7 @@ public class Terminal
 			
 		}
 		
+		
 		try
 		{
 			String tempGPS = payloadData.gpsData;
@@ -299,20 +321,40 @@ public class Terminal
 		
 		
 		
-		PayloadUpdateEvent complete = new PayloadUpdateEvent(this, payloadData);
+		PayloadUpdateGraphEvent complete = new PayloadUpdateGraphEvent(this, payloadData);
 		Object[] listeners = Terminal.listenerList.getListenerList(); 
    		for (int i=0; i<listeners.length; i+=2) 
    		{
-             if (listeners[i]==IPayloadUpdateUpdateEventListener.class)
+             if (listeners[i]==IPayloadUpdateUpdateGraphEventListener.class)
              {
-                 ((IPayloadUpdateUpdateEventListener)listeners[i+1]).PayloadUpdateUpdateEventHandeler(complete);
+                 ((IPayloadUpdateUpdateGraphEventListener)listeners[i+1]).PayloadUpdateUpdateEventHandeler(complete);
              }
-        } 		 
+        } 		
+   		
+		PayloadUpdataDataEvent complete2 = new PayloadUpdataDataEvent(this, payloadData);
+		Object[] listeners2 = Terminal.listenerList.getListenerList(); 
+   		for (int i=0; i<listeners2.length; i+=2) 
+   		{
+             if (listeners[i]==IPayloadUpdateDataEventListener.class)
+             {
+                 ((IPayloadUpdateDataEventListener)listeners2[i+1]).PayloadUpdateDataEventHandeler(complete2);
+             }
+        } 		
+   		
+   		
+   		
+   		
 		}
+		
+		
 	}
 	
-	public static void addPayloadUpdateEvent (IPayloadUpdateUpdateEventListener completePayloadUpdateEventListener)
+	public static void addPayloadUpdateEvent (IPayloadUpdateUpdateGraphEventListener completePayloadUpdateEventListener)
 	{
-		listenerList.add(IPayloadUpdateUpdateEventListener.class, completePayloadUpdateEventListener);
+		listenerList.add(IPayloadUpdateUpdateGraphEventListener.class, completePayloadUpdateEventListener);
+	}
+	public static void addPayloadUpdateDataEvent (IPayloadUpdateDataEventListener completePayloadUpdateDataEventListener)
+	{
+		listenerList.add(IPayloadUpdateDataEventListener.class, completePayloadUpdateDataEventListener);
 	}
 }
