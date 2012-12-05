@@ -2,12 +2,9 @@ package Componets;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import Events.PayloadUpdateDataEventListener;
-import Events.PayloadUpdateGraphEventListener;
 import GUI.DataGUI;
 import GUI.Terminal;
-import Graphs.TimeGraph;
 
 public class DataGUIMenuItemActionListener implements ActionListener
 {

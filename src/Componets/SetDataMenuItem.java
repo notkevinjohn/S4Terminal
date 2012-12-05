@@ -3,7 +3,6 @@ package Componets;
 import javax.swing.JMenuItem;
 
 import GUI.DataGUI;
-import GUI.Terminal;
 
 public class SetDataMenuItem extends JMenuItem 
 {
