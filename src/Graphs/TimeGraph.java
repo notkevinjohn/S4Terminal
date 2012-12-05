@@ -64,7 +64,7 @@ public class TimeGraph extends JFrame {
 		this.yAxisLable = yAxisLable;
 		this.sen_Value = sen_Value;
 		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 650, 420);
 		this.setVisible(true);
 		

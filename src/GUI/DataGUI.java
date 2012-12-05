@@ -67,8 +67,8 @@ public class DataGUI extends JFrame
 		panel.setBackground(Color.WHITE);
 		panel.setForeground(Color.WHITE);
 		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(0, 0, 500, 500);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setBounds(0, 0, 495, 540);
 		this.setVisible(true);
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -136,8 +136,6 @@ public class DataGUI extends JFrame
 	            
 	        		dataset1.setValue(priorAlt + changeInAlt*i);
 	        		dataset2.setValue(dataset1.getValue().doubleValue()/100);
-	        		System.out.println(i);
-	        		System.out.println(dataset1.getValue().doubleValue());
 	        		i++;
 	        	}
 	        	else
