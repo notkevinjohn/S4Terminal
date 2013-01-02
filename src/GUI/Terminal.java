@@ -7,7 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyledDocument;
 import javax.swing.JScrollPane;
@@ -33,9 +35,16 @@ import java.awt.event.WindowListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeries;
+
+import javax.swing.BorderFactory;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
+
 
 public class Terminal 
 {
@@ -70,7 +79,13 @@ public class Terminal
 	public JMenuItem mntmOpenGui;
 	public SetDataMenuItem setDataMenuItem;
 	public DataGUIMenuItem dataGUIMenuItem;
-
+    public long lastRecivedTime = 0;
+    public boolean goodData = true;    
+	public JEditorPane goodDataButton;
+	public JProgressBar signalStrength;
+	private JProgressBar batteryStatus;
+	private JLabel lblSignal;
+	private JLabel lblBattery;
 	
 	public Terminal(String deviceName)
 	{
@@ -122,7 +137,7 @@ public class Terminal
 		
 			
 		scrollPane = new JScrollPane();
-		scrollPane.setSize(622,528);
+		scrollPane.setSize(494,483);
 		scrollPane.setLocation(0,21);
 		panel.add(scrollPane);
 		
@@ -140,7 +155,7 @@ public class Terminal
 		chckbxAutoscroll.setBackground(Color.WHITE);
 		chckbxAutoscroll.setSelected(true);
 		chckbxAutoscroll.setSize(92,23);
-		chckbxAutoscroll.setLocation(520,556);
+		chckbxAutoscroll.setLocation(434,556);
 		panel.add(chckbxAutoscroll);
 		chckbxAutoscroll.setActionListener();
 		terminalText.setActionListener(terminalText,chckbxAutoscroll);
@@ -150,7 +165,7 @@ public class Terminal
 		
 
 		sendLine = new SendLineTextField();
-		sendLine.setSize(334,23);
+		sendLine.setSize(248,23);
 		sendLine.setLocation(10,556);
 		panel.add(sendLine);
 		sendLine.setActionListener();
@@ -162,7 +177,7 @@ public class Terminal
 		
 		btnSend = new SendButton(sendLine);
 		btnSend.setSize(75,23);
-		btnSend.setLocation(354,556);
+		btnSend.setLocation(268,556);
 		panel.add(btnSend);
 		btnSend.setActionListener();
 		
@@ -171,7 +186,7 @@ public class Terminal
 		
 		btnStartStop = new StartStopButton();
 		btnStartStop.setSize(75,23);
-		btnStartStop.setLocation(439,556);
+		btnStartStop.setLocation(353,556);
 		panel.add(btnStartStop);
 		
 		menuBar = new JMenuBar();
@@ -187,10 +202,47 @@ public class Terminal
 		
 		dataGUIMenuItem = new DataGUIMenuItem(this,"Open GUI");
 		mnData.add(dataGUIMenuItem);
-	    dataGUIMenuItem.setActionListener();
+		dataGUIMenuItem.setActionListener();
+		
+		
+		Border raisedetched;
+		raisedetched = BorderFactory.createEtchedBorder(EtchedBorder.RAISED,Color.DARK_GRAY, Color.GRAY); 
+		
+		goodDataButton = new JEditorPane();
+		goodDataButton.setBackground(Color.GREEN);
+		goodDataButton.setBorder(raisedetched);
+		goodDataButton.setBounds(587, 32, 24, 20);
+		panel.add(goodDataButton);
+		
+		
+		JLabel lblDataStatus = new JLabel("Data Status");
+		lblDataStatus.setBounds(512, 38, 65, 14);
+		panel.add(lblDataStatus);
+		
+		signalStrength = new JProgressBar();
+		signalStrength.setOrientation(SwingConstants.VERTICAL);
+		signalStrength.setBounds(515, 63, 11, 127);
+		panel.add(signalStrength);
+		
+		batteryStatus = new JProgressBar();
+		batteryStatus.setMinimum(2800);
+		batteryStatus.setMaximum(3065);
+		batteryStatus.setOrientation(SwingConstants.VERTICAL);
+		batteryStatus.setBounds(570, 63, 11, 127);
+		panel.add(batteryStatus);
+		
+		lblSignal = new JLabel("Signal");
+		lblSignal.setBounds(504, 201, 46, 14);
+		panel.add(lblSignal);
+		
+		lblBattery = new JLabel("Battery");
+		lblBattery.setBounds(560, 201, 46, 14);
+		panel.add(lblBattery);
+	   
 
 		
 		btnStartStop.setActionListener();
+		
 		
 		
 		
@@ -297,30 +349,51 @@ public class Terminal
 				mnGraph.add(graphType);
 				
 			}
+			
 			graphSet = true;
 			//timeGraph = new TimeGraph(deviceName, deviceName, deviceName, 1);
 			
 		}
 		
 		
-		try
+
+		
+		if(payloadData.timeStamp >= lastRecivedTime && !goodData)
 		{
-			String tempGPS = payloadData.gpsData;
-			String tempSensor = payloadData.scienceData + "\n";
-			doc.insertString(doc.getLength(),tempGPS, blue);
-			doc.insertString(doc.getLength(), tempSensor, green);
-			//System.out.print(updateString);
+			goodDataButton.setForeground(Color.GREEN);
+			goodDataButton.setBackground(Color.GREEN);
+			goodData = true;
 		}
-		catch(Exception e) 
-		{ 
-			System.out.println(e);
+		if(payloadData.timeStamp <= lastRecivedTime && goodData)
+		{
+			goodDataButton.setForeground(Color.RED);
+			goodDataButton.setBackground(Color.RED);
+			goodData = false;
 		}
+		lastRecivedTime = payloadData.timeStamp;
+		
+		if(goodData)
+		{
+			try
+			{
+				String tempGPS = payloadData.gpsData;
+				String tempSensor = payloadData.scienceData + "\n";
+				doc.insertString(doc.getLength(),tempGPS, blue);
+				doc.insertString(doc.getLength(), tempSensor, green);
+				
+				//System.out.print(updateString);
+			}
+			catch(Exception e) 
+			{ 
+				System.out.println(e);
+			}
+		}
+		
+		
 		if(enableGraph == true)
 		{
 			//timeGraph.updatePayloadData(payloadData);
-		
-		
-		
+	
 		PayloadUpdateGraphEvent complete = new PayloadUpdateGraphEvent(this, payloadData);
 		Object[] listeners = Terminal.listenerList.getListenerList(); 
    		for (int i=0; i<listeners.length; i+=2) 
@@ -340,11 +413,26 @@ public class Terminal
                  ((IPayloadUpdateDataEventListener)listeners2[i+1]).PayloadUpdateDataEventHandeler(complete2);
              }
         } 		
-   		
-   		
-   		
-   		
+
+ 
 		}
+		
+		if(payloadData.brodcastMessage != null)
+		{
+			long temp = Long.parseLong(payloadData.brodcastMessage.RSSI,16);
+			int tempVal = (int) (100-temp); // needs to be addressed for min and max
+			signalStrength.setValue(tempVal);
+			
+			long temp2 = Long.parseLong(payloadData.brodcastMessage.BatteryVoltage,16);
+			int tempVal2 = (int) (temp2); // needs to be addressed for min and max
+			batteryStatus.setValue(tempVal2);
+		}
+		
+		
+		
+		
+		
+		
 		
 		
 	}

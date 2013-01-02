@@ -25,17 +25,17 @@ public class PayloadObjectRX
 			try 
 			{
 				
-				Object updatePayloadData = 	(Object)objectInputStream.readObject();
+				PayloadData updatePayloadData = (PayloadData)objectInputStream.readObject();
 
 				payloadDataVector.addElement((PayloadData) updatePayloadData);
+			
 			} 
 			catch (ClassNotFoundException e) 
 			{
-				e.printStackTrace();
+
 			}
 			catch(IOException e)
 			{
-				e.printStackTrace();
 			}
 			
 	     

@@ -35,5 +35,6 @@ public class PayloadData implements Serializable
 	public double Sen_9_Value;
 	public String Sen_10_Key;
 	public double Sen_10_Value;
+	public BrodcastMessage brodcastMessage;
 	
 }

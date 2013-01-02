@@ -89,7 +89,7 @@ public class DataController extends Thread
 				{
 					  lastReadTime = System.currentTimeMillis();
 					  streamInString = getStreamIn.StreamIn(socket);
-					  System.out.println(streamInString);
+					 // System.out.println(streamInString);
 					   
 					  if(streamInString.startsWith("PayloadUpdate"))
 					  {
