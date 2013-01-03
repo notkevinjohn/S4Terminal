@@ -3,43 +3,41 @@ package IOStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.util.Vector;
-import Data.PayloadData;
-import Main.DataController;
+import Data.PayloadRX;
 
 public class PayloadObjectRX 
 {
-	public Vector<PayloadData> payloadDataVector;
+	public PayloadRX payloadRX;
 	public Socket socket;
 	public ObjectInputStream objectInputStream;
 	
-	public PayloadObjectRX(Socket _socket, ObjectInputStream objectInputStream)
+	public PayloadObjectRX(Socket _socket)
 	{
 		socket = _socket;
-		this.objectInputStream = objectInputStream;
+		try 
+		{
+			objectInputStream = new ObjectInputStream(socket.getInputStream());
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	
-	public   Vector<PayloadData> getPayloadObject(Vector<PayloadData> payloadDataVector, DataController dataController)	
+	public PayloadRX getPayloadObject()	
 	{	
-			try 
-			{
-				
-				PayloadData updatePayloadData = (PayloadData)objectInputStream.readObject();
-
-				payloadDataVector.addElement((PayloadData) updatePayloadData);
+		try 
+		{
+			payloadRX = (PayloadRX)objectInputStream.readObject();
+		} 
+		catch (ClassNotFoundException e) 
+		{	
+		}
+		catch(IOException e)
+		{
+		}
 			
-			} 
-			catch (ClassNotFoundException e) 
-			{
-
-			}
-			catch(IOException e)
-			{
-			}
-			
-	     
-
-		return payloadDataVector;
+		return payloadRX;
 	}
 }

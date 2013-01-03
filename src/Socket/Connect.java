@@ -19,6 +19,7 @@ public class Connect extends Thread
 {
 	private String ip;
 	private int port;
+	private String terminalName;
 	private DataController dataController;
 	private SocketAddress socketAddress;
 	private int socketTimeout = 3000;
@@ -46,6 +47,7 @@ public class Connect extends Thread
 			{
 				ip = event.ip;
 				port = event.port; 
+				terminalName = event.terminalName;
 				connect();
 			}
 		});
@@ -73,14 +75,11 @@ public class Connect extends Thread
 	}	
 	public void run()
 	{
-		
-		
 		SendName sendName = new SendName();
-		if(sendName.sendName(socket))
+		if(sendName.sendName(socket,terminalName))
 		{
-			objectInputStream = sendName.objectInputStream;
 			dataController = new DataController();
-			dataController.Initilize(socket, ip, port, sendName.deviceName, objectInputStream); 
+			dataController.Initilize(socket, sendName.payloadName, sendName.commandObjectTX, sendName.payloadObjectRX);
 		}
 	}
 	

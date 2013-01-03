@@ -19,6 +19,7 @@ public class ConnectActionListener implements ActionListener
 	private ArrayList<IPData> IPStorage;
 	private String ip;
 	private int port;
+	private String terminalName;
 	private JComboBox<String> TCPcomboBox;
 	private JFrame frame;
 	public static EventListenerList listenerList = new EventListenerList();
@@ -35,12 +36,11 @@ public class ConnectActionListener implements ActionListener
 	{
 		port = IPStorage.get(TCPcomboBox.getSelectedIndex()).port;
 		ip = IPStorage.get(TCPcomboBox.getSelectedIndex()).ip;
+		terminalName = IPStorage.get(TCPcomboBox.getSelectedIndex()).name;
 		
 		frame.setVisible(false);
-		System.out.println(ip);
-		System.out.println(port);
 		
-		CompleteConnectEvent complete = new CompleteConnectEvent(this,ip,port);
+		CompleteConnectEvent complete = new CompleteConnectEvent(this,ip,port,terminalName);
 		Object[] listeners = Connect.listenerList.getListenerList(); 
    		for (int i=0; i<listeners.length; i+=2) 
    		{

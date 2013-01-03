@@ -2,14 +2,17 @@ package Events;
 
 import java.util.EventObject;
 
+import Data.Command;
+
 public class CompleteSendEvent  extends EventObject{
 	private static final long serialVersionUID = 1893392283841623289L;
-	public String send;
 	
-	public  CompleteSendEvent (Object source, String _send)
+	public Command command;
+	
+	public  CompleteSendEvent (Object source, Command command)
 	{
 		super(source);
-		send = _send;
+		this.command = command;
 	}
 }
 

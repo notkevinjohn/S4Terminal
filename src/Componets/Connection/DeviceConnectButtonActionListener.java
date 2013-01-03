@@ -25,9 +25,8 @@ public class DeviceConnectButtonActionListener implements ActionListener
 	{
 		if(payloadListComboBox.getSelectedItem() != null)
 		{
-			String sendString = "DeviceName" + payloadListComboBox.getSelectedItem().toString();
-			sendName.TXName(sendString);
-			System.out.println(sendString);
+			String payloadName = payloadListComboBox.getSelectedItem().toString();
+			sendName.SelectPayload(payloadName);
 			sendConnectionName.frame.setVisible(false);
 		}
 		else

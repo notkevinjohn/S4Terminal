@@ -15,6 +15,6 @@ public class RefreshButtonActionListener implements ActionListener
 
 	public void actionPerformed(ActionEvent arg0) 
 	{
-		sendName.TXName("Refresh");
+		sendName.RefreshPayloadList();
 	}
 }
