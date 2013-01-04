@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
 import javax.swing.SwingUtilities;
@@ -51,7 +53,7 @@ public class DataController extends Thread
 	public CommandObjectTX commandObjectTX;
 	public Command command;
 	public long lastTimeStampFromPayload;
-	
+	private Timer timer;
 	public void Initilize(Socket socket, String payloadName, CommandObjectTX commandObjectTX, PayloadObjectRX payloadObjectRX)
 	{
 		this.socket = socket;
@@ -79,7 +81,9 @@ public class DataController extends Thread
 		CommandRXController();
 		Start();
 		Stop();
+		UpdatePayload(updateRate);
 		this.start();
+		
 	}
 	
 	public void run() 
@@ -133,50 +137,31 @@ public class DataController extends Thread
 //								
 //							}
 //					  }
-				}
-				
-//				if(!isConnectionAlive())
-//				{
-//					updateText("Lost Connection...\n" , green);
-//					terminal.btnSend.setEnabled(false);
-//					
-//					Reconnect reconnect = new Reconnect(this,ip,port);
-//					socket = reconnect.socketLoop();
-//					
-//					if(socket.isBound())
-//					{
-//						
-//						streamOut.attachSocket(socket);
-//						terminal.btnSend.setEnabled(true);
-//						lastReadTime = System.currentTimeMillis();			
-//					}
-//				}
-				
-				if(System.currentTimeMillis() - lastUpdateTime > updateRate)
-				{
-//					String stringOut = "payloadUpdateRequest." + deviceName;
-//					streamOut.streamOut(stringOut);
-					
-					Command command = new Command();
-					command.timeStamp = lastTimeStampFromPayload;
-					command.payloadName = payloadName;
-					sendCommandRX(command);
-					
-					lastUpdateTime = System.currentTimeMillis();
-
-				}
-				
+		//try { Thread.sleep(10); } catch(InterruptedException e) { /* we tried */}
+					}
 			}
-			
-			else
-			{
-				// getStreamIn.StreamIn(socket);
-				 lastReadTime = System.currentTimeMillis();
-			}
-			try { Thread.sleep(10); } catch(InterruptedException e) { /* we tried */}
 		}
 	}
+				 
+	public void UpdatePayload(int updateRate) 
+	{
+		timer = new Timer();
+		timer.schedule(new RemindTask(), 0, updateRate);
+	}
+	
 
+	class RemindTask extends TimerTask 
+	{
+		public void run() 
+		{
+			Command command = new Command();
+			command.timeStamp = lastTimeStampFromPayload;
+			command.payloadName = payloadName;
+			sendCommandRX(command);
+			
+		}
+	}
+			
 	
 	public void sendCommandRX(final Command command)
 	{
@@ -186,7 +171,7 @@ public class DataController extends Thread
 			    	commandObjectTX.sendObject(command);
 			    }
 			  });
-			}
+	}
 
 //	public void updateText(final String _StreamInString, final SimpleAttributeSet type) {
 //		  SwingUtilities.invokeLater(new Runnable() {

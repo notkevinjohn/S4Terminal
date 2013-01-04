@@ -1,16 +1,13 @@
 package Data;
 
 import java.io.Serializable;
-import java.util.Vector;
 
 public class PayloadData implements Serializable
 {
-
-	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8400681633597879215L;
+	private static final long serialVersionUID = -5658928332982123269L;
 	
 	public String payloadName;
 	public String gpsData;
@@ -40,6 +37,6 @@ public class PayloadData implements Serializable
 	public String Sen_10_Key;
 	public double Sen_10_Value;
 	public BrodcastMessage brodcastMessage;
-	public Vector<TerminalPayloadList> PayloadList;
+	public PayloadDeviceNameList PayloadList;
 	
 }

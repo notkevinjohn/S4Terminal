@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.Vector;
 
 import Data.Command;
+import Data.PayloadData;
 import Data.PayloadRX;
 import Data.TerminalPayloadList;
 import GUI.SendConnectionName;
@@ -70,6 +71,7 @@ public class SendName
 			if(available > 0)
 			{
 				payloadRX = new PayloadRX();
+				payloadRX.payloadRX = new Vector<PayloadData>();
 				payloadRX = payloadObjectRX.getPayloadObject();
 				
 				if(payloadRX != null && payloadRX.payloadRX.get(0).PayloadList != null && payloadRX.payloadRX.get(0).payloadName == null)
@@ -115,6 +117,7 @@ public class SendName
 	{
 		commandObjectTX.sendObject(command);
 	}
+	
 	public void SelectPayload(String payloadName)
 	{
 		this.payloadName = payloadName;

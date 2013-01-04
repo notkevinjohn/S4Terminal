@@ -1,7 +1,6 @@
 package GUI;
 
 import java.util.ArrayList;
-import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,7 +12,7 @@ import java.awt.CheckboxGroup;
 import Socket.SendName;
 import Componets.Connection.DeviceConnectButton;
 import Componets.Connection.RefreshButton;
-import Data.TerminalPayloadList;
+import Data.PayloadDeviceNameList;
 import javax.swing.JComboBox;
 
 public class SendConnectionName extends JFrame
@@ -29,7 +28,7 @@ public class SendConnectionName extends JFrame
 	public RefreshButton refreshButton;
 	public DeviceConnectButton deviceConnectButton;
 	public CheckboxGroup checkBoxGroup;
-	public Vector<TerminalPayloadList> payloadListVector;
+	public PayloadDeviceNameList payloadDeviceNameList;
 	public JComboBox<String> payloadListComboBox;
 	
 	public SendConnectionName(SendName sendName) 
@@ -74,7 +73,7 @@ public class SendConnectionName extends JFrame
 		
 		frame.repaint();
 		
-		if(payloadListVector != null)
+		if(payloadDeviceNameList != null)
 		{
 			redrawDeviceNames(deviceStringNames);
 		}
@@ -90,28 +89,27 @@ public class SendConnectionName extends JFrame
 		new JPanel();
 		payloadListComboBox.removeAllItems();
 		
-		if(payloadListVector == null || payloadListVector.size() == 0)
+		if(payloadDeviceNameList == null)// || payloadDeviceNameList.payloadDeviceNameList.size() == 0)
 		{
 			deviceConnectButton.setEnabled(false);
 			payloadListComboBox.addItem("No Payloads Available");
 		}
-		
-		else
+		else if(payloadDeviceNameList != null)
 		{
 			deviceConnectButton.setEnabled(true);
-			int deviceSize = payloadListVector.size();
+			int deviceSize = payloadDeviceNameList.payloadDeviceNameList.size();
 			for(int i =0; i< deviceSize; i++)
 			{
-				String name = payloadListVector.get(i).deviceName;
+				String name = payloadDeviceNameList.payloadDeviceNameList.get(i).deviceName;
 				payloadListComboBox.addItem(name);
 			}
 			deviceConnectButton.setActionListener(sendName, payloadListComboBox,this);	
 		}
 	}
 	
-	public void refreshPayloadList(Vector<TerminalPayloadList> payloadListVector)
+	public void refreshPayloadList(PayloadDeviceNameList payloadDeviceNameList)
 	{
-		this.payloadListVector = payloadListVector;
+		this.payloadDeviceNameList = payloadDeviceNameList;
 		redrawDeviceNames(deviceStringNames);
 	}
 }
