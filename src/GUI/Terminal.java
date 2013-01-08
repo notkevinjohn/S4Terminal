@@ -364,7 +364,7 @@ public class Terminal
 			goodDataButton.setBackground(Color.GREEN);
 			goodData = true;
 		}
-		if(payloadData.timeStamp <= lastRecivedTime && goodData)
+		if(payloadData.timeStamp < lastRecivedTime && goodData)
 		{
 			goodDataButton.setForeground(Color.RED);
 			goodDataButton.setBackground(Color.RED);

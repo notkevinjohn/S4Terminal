@@ -52,7 +52,7 @@ public class DataController extends Thread
 	public  ObjectInputStream objectInputStream;
 	public CommandObjectTX commandObjectTX;
 	public Command command;
-	public long lastTimeStampFromPayload;
+	public long lastTimeStampFromPayload = System.currentTimeMillis();
 	private Timer timer;
 	public void Initilize(Socket socket, String payloadName, CommandObjectTX commandObjectTX, PayloadObjectRX payloadObjectRX)
 	{
@@ -113,32 +113,10 @@ public class DataController extends Thread
 							PayloadData payloadData = payloadRX.payloadRX.get(i);
 							updatePayloadData(payloadData);
 							lastTimeStampFromPayload = payloadData.timeStamp;
+							System.out.println(lastTimeStampFromPayload);
 						}
 					}
-					
-//					  lastReadTime = System.currentTimeMillis();
-//					  streamInString = getStreamIn.StreamIn(socket);
-//					 // System.out.println(streamInString);
-//					   
-//					  if(streamInString.startsWith("PayloadUpdate"))
-//					  {
-//							payloadDataVector = payloadObjectRX.getPayloadObject(payloadDataVector,this);
-//							
-//							if(payloadDataVector != null)
-//							{
-////								updateText(payloadDataVector.lastElement().gpsData , blue);
-////								String tempString = payloadDataVector.lastElement().scienceData;
-////								tempString += '\n';
-////								
-////								updateText(tempString, blue);
-//								
-//								
-//								updatePayloadData(payloadDataVector.lastElement());
-//								
-//							}
-//					  }
-		//try { Thread.sleep(10); } catch(InterruptedException e) { /* we tried */}
-					}
+				}
 			}
 		}
 	}
