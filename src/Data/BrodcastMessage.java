@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 public class BrodcastMessage implements Serializable
 {
-	
 	/**
 	 * 
 	 */
@@ -12,10 +11,10 @@ public class BrodcastMessage implements Serializable
 	
 	public String macAddress;
 	public String channel;
-	public String RSSI;
+	public String RSSI = "0";
 	public String localTCPPort;
 	public String RTCvalue;
-	public String BatteryVoltage;
+	public String BatteryVoltage = "0";
 	public String valueofGPIO;
 	public String ASCIITime;
 	public String Version;

@@ -123,7 +123,7 @@ public class SendName
 		this.payloadName = payloadName;
 		
 		Command command = new Command();
-		
+		command.terminalName = terminalName;
 		command.payloadName = payloadName;
 		command.getPayloadList = true;
 		commandObjectTX.sendObject(command);

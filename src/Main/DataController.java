@@ -48,16 +48,24 @@ public class DataController extends Thread
 	public WiFiWriter wiFiWriter;
 	public static javax.swing.event.EventListenerList listenerList = new javax.swing.event.EventListenerList();
 	public String payloadName;
+	public String terminalName;
 	public PayloadObjectRX payloadObjectRX;
 	public  ObjectInputStream objectInputStream;
 	public CommandObjectTX commandObjectTX;
 	public Command command;
 	public long lastTimeStampFromPayload = System.currentTimeMillis();
 	private Timer timer;
-	public void Initilize(Socket socket, String payloadName, CommandObjectTX commandObjectTX, PayloadObjectRX payloadObjectRX)
+	
+	private boolean command1 = false;
+	private boolean command2 = false;
+	private boolean command3 = false;
+	private boolean command4 = false;
+	
+	public void Initilize(Socket socket, String payloadName, CommandObjectTX commandObjectTX, PayloadObjectRX payloadObjectRX, String terminalName)
 	{
 		this.socket = socket;
 		this.payloadName = payloadName;
+		this.terminalName	= terminalName;
 		this.commandObjectTX = commandObjectTX;
 		this.payloadObjectRX = payloadObjectRX;
 		
@@ -70,7 +78,7 @@ public class DataController extends Thread
 		StyleConstants.setForeground(blue, Color.BLUE);
 		StyleConstants.setForeground(green, new Color(0,64,0));
 		
-		terminal = new Terminal(payloadName);
+		terminal = new Terminal(payloadName,this);
 		wiFiWriter = new WiFiWriter();
 		
 //		getStreamIn = new GetStreamIn();
@@ -135,20 +143,30 @@ public class DataController extends Thread
 			Command command = new Command();
 			command.timeStamp = lastTimeStampFromPayload;
 			command.payloadName = payloadName;
-			sendCommandRX(command);
+			command.terminalName = terminalName;
+			sendCommandTX(command);
+			
 			
 		}
 	}
 			
 	
-	public void sendCommandRX(final Command command)
+	public void sendCommandToPayload(Command command)
 	{
-		 SwingUtilities.invokeLater(new Runnable() {
-			    public void run() 
-			    {
-			    	commandObjectTX.sendObject(command);
-			    }
-			  });
+		command.payloadName = payloadName;
+		command.terminalName = terminalName;
+		command.timeStamp = -1;
+		sendCommandTX(command);
+	}
+	
+	public void sendCommandTX(final Command command)
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		    	commandObjectTX.sendObject(command);
+		    }
+		  });
+		
 	}
 
 //	public void updateText(final String _StreamInString, final SimpleAttributeSet type) {
@@ -198,6 +216,7 @@ public class DataController extends Thread
 		return true; //(System.currentTimeMillis() - lastReadTime) < timeout;
 	}
 
+	
 	public static void addCompleteSendEventListener (ICompleteSendEventListener completeSendEventListener)
 	{
 		listenerList.add(ICompleteSendEventListener.class, completeSendEventListener);

@@ -33,6 +33,7 @@ public class PayloadObjectRX
 		} 
 		catch (ClassNotFoundException e) 
 		{	
+			
 		}
 		catch(IOException e)
 		{

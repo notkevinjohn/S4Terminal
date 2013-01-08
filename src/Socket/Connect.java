@@ -79,7 +79,7 @@ public class Connect extends Thread
 		if(sendName.sendName(socket,terminalName))
 		{
 			dataController = new DataController();
-			dataController.Initilize(socket, sendName.payloadName, sendName.commandObjectTX, sendName.payloadObjectRX);
+			dataController.Initilize(socket, sendName.payloadName, sendName.commandObjectTX, sendName.payloadObjectRX, terminalName);
 		}
 	}
 	

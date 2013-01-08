@@ -70,17 +70,19 @@ public class SendConnectionName extends JFrame
 		payloadListComboBox.setBounds(10, 12, 231, 20);
 		contentPane.add(payloadListComboBox);
 		
+		payloadDeviceNameList = new PayloadDeviceNameList();
 		
 		frame.repaint();
 		
-		if(payloadDeviceNameList != null)
+		if(payloadDeviceNameList.payloadDeviceNameList != null)
 		{
-			redrawDeviceNames(deviceStringNames);
+			refreshPayloadList(payloadDeviceNameList);
 		}
 		else
 		{
 			deviceConnectButton.setEnabled(false);
 			payloadListComboBox.addItem("No Payloads Available");
+			
 		}
 	}
 
@@ -89,12 +91,12 @@ public class SendConnectionName extends JFrame
 		new JPanel();
 		payloadListComboBox.removeAllItems();
 		
-		if(payloadDeviceNameList == null)// || payloadDeviceNameList.payloadDeviceNameList.size() == 0)
+		if(payloadDeviceNameList.payloadDeviceNameList.isEmpty())// || payloadDeviceNameList.payloadDeviceNameList.size() == 0)
 		{
 			deviceConnectButton.setEnabled(false);
 			payloadListComboBox.addItem("No Payloads Available");
 		}
-		else if(payloadDeviceNameList != null)
+		else
 		{
 			deviceConnectButton.setEnabled(true);
 			int deviceSize = payloadDeviceNameList.payloadDeviceNameList.size();

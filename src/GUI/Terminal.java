@@ -7,17 +7,15 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyledDocument;
 import javax.swing.JScrollPane;
 import Componets.AutoscrollCheckBox;
 import Componets.DataGUIMenuItem;
 import Componets.GraphButtonMenuItem;
+import Componets.OpenCommandMenuItem;
 import Componets.SendButton;
-import Componets.SendLineTextField;
 import Componets.SetDataMenuItem;
 import Componets.StartStopButton;
 import Componets.TerminalText;
@@ -27,6 +25,8 @@ import Events.IPayloadUpdateUpdateGraphEventListener;
 import Events.PayloadUpdataDataEvent;
 import Events.PayloadUpdateGraphEvent;
 import Graphs.TimeGraph;
+import Main.DataController;
+import NoLongerUsed.SendLineTextField;
 import java.awt.Color;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -35,12 +35,9 @@ import java.awt.event.WindowListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeries;
-
-import javax.swing.BorderFactory;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
@@ -73,6 +70,7 @@ public class Terminal
 	public TimeGraph timeGraph;
 	private JMenuBar menuBar;
 	private JMenu mnGraph;
+	private OpenCommandMenuItem openCommand;
 	private boolean graphSet = false;
 	private ButtonGroup graph;
 	public boolean dataSet = false;
@@ -81,15 +79,17 @@ public class Terminal
 	public DataGUIMenuItem dataGUIMenuItem;
     public long lastRecivedTime = 0;
     public boolean goodData = true;    
-	public JEditorPane goodDataButton;
 	public JProgressBar signalStrength;
 	private JProgressBar batteryStatus;
 	private JLabel lblSignal;
 	private JLabel lblBattery;
+	private DataController dataController;
 	
-	public Terminal(String deviceName)
+	public Terminal(String deviceName, DataController dataController)
 	{
 		this.deviceName = deviceName;
+		this.dataController = dataController;
+		
 		EventQueue.invokeLater(new Runnable() 
 		{
 			public void run() 
@@ -137,7 +137,7 @@ public class Terminal
 		
 			
 		scrollPane = new JScrollPane();
-		scrollPane.setSize(494,483);
+		scrollPane.setSize(493,558);
 		scrollPane.setLocation(0,21);
 		panel.add(scrollPane);
 		
@@ -155,7 +155,7 @@ public class Terminal
 		chckbxAutoscroll.setBackground(Color.WHITE);
 		chckbxAutoscroll.setSelected(true);
 		chckbxAutoscroll.setSize(92,23);
-		chckbxAutoscroll.setLocation(434,556);
+		chckbxAutoscroll.setLocation(515,556);
 		panel.add(chckbxAutoscroll);
 		chckbxAutoscroll.setActionListener();
 		terminalText.setActionListener(terminalText,chckbxAutoscroll);
@@ -164,31 +164,31 @@ public class Terminal
 		
 		
 
-		sendLine = new SendLineTextField();
-		sendLine.setSize(248,23);
-		sendLine.setLocation(10,556);
-		panel.add(sendLine);
-		sendLine.setActionListener();
+//		sendLine = new SendLineTextField();
+//		sendLine.setSize(248,23);
+//		sendLine.setLocation(10,556);
+//		panel.add(sendLine);
+//		sendLine.setActionListener();
+////		
+////		final int sendLineX = sendLine.getX();
+//		final int sendLineXresize = panel.getWidth()-sendLine.getWidth();
+//		final int sendLineY =  panel.getHeight()-sendLine.getY();
+//
+//		
+//		btnSend = new SendButton(sendLine);
+//		btnSend.setSize(75,23);
+//		btnSend.setLocation(268,556);
+//		panel.add(btnSend);
+//		btnSend.setActionListener();
+//		
+//		final int btnSendX = panel.getWidth()-btnSend.getX();
+//		final int btnSendY = panel.getHeight()-btnSend.getY();
 		
-		final int sendLineX = sendLine.getX();
-		final int sendLineXresize = panel.getWidth()-sendLine.getWidth();
-		final int sendLineY =  panel.getHeight()-sendLine.getY();
-
-		
-		btnSend = new SendButton(sendLine);
-		btnSend.setSize(75,23);
-		btnSend.setLocation(268,556);
-		panel.add(btnSend);
-		btnSend.setActionListener();
-		
-		final int btnSendX = panel.getWidth()-btnSend.getX();
-		final int btnSendY = panel.getHeight()-btnSend.getY();
-		
-		btnStartStop = new StartStopButton();
-		btnStartStop.setSize(75,23);
-		btnStartStop.setLocation(353,556);
-		panel.add(btnStartStop);
-		
+//		btnStartStop = new StartStopButton();
+//		btnStartStop.setSize(75,23);
+//		btnStartStop.setLocation(353,556);
+//		panel.add(btnStartStop);
+//		
 		menuBar = new JMenuBar();
 		menuBar.setBounds(0, 0, 622, 21);
 		panel.add(menuBar);
@@ -204,16 +204,18 @@ public class Terminal
 		mnData.add(dataGUIMenuItem);
 		dataGUIMenuItem.setActionListener();
 		
+		JMenu mnCommand = new JMenu("Command");
+		menuBar.add(mnCommand);
 		
-		Border raisedetched;
-		raisedetched = BorderFactory.createEtchedBorder(EtchedBorder.RAISED,Color.DARK_GRAY, Color.GRAY); 
+		openCommand = new OpenCommandMenuItem(this,"Open Command Window");
+		mnCommand.add(openCommand);
+		openCommand.setActionListener(dataController);
 		
-		goodDataButton = new JEditorPane();
-		goodDataButton.setBackground(Color.GREEN);
-		goodDataButton.setBorder(raisedetched);
-		goodDataButton.setBounds(587, 32, 24, 20);
-		panel.add(goodDataButton);
 		
+		
+//		Border raisedetched;
+//		raisedetched = BorderFactory.createEtchedBorder(EtchedBorder.RAISED,Color.DARK_GRAY, Color.GRAY);
+//		
 		
 		JLabel lblDataStatus = new JLabel("Data Status");
 		lblDataStatus.setBounds(512, 38, 65, 14);
@@ -241,14 +243,14 @@ public class Terminal
 	   
 
 		
-		btnStartStop.setActionListener();
+//		btnStartStop.setActionListener();
+//		
 		
 		
-		
-		
-		final int btnStartStopX = panel.getWidth()-btnStartStop.getX();
-		final int btnStartStopY = panel.getHeight()-btnStartStop.getY();
-		
+//		
+//		final int btnStartStopX = panel.getWidth()-btnStartStop.getX();
+//		final int btnStartStopY = panel.getHeight()-btnStartStop.getY();
+//		
 
 		final int chckbxAutoscrollX = panel.getWidth()-chckbxAutoscroll.getX();
 		final int chckbxAutoscrollY = panel.getHeight()-chckbxAutoscroll.getY();
@@ -262,11 +264,11 @@ public class Terminal
 				
 				panel.setSize(frame.getContentPane().getSize());
 				scrollPane.setSize(frameWidth-scrollPaneX, frameHeight-scrollPaneY);
-				sendLine.setSize(frameWidth-sendLineXresize,sendLine.getHeight());
-				
-				sendLine.setLocation(sendLineX, frameHeight-sendLineY);
-				btnSend.setLocation(frameWidth-btnSendX, frameHeight-btnSendY);
-				btnStartStop.setLocation(frameWidth-btnStartStopX, frameHeight-btnStartStopY);
+//				sendLine.setSize(frameWidth-sendLineXresize,sendLine.getHeight());
+//				
+//				sendLine.setLocation(sendLineX, frameHeight-sendLineY);
+//				btnSend.setLocation(frameWidth-btnSendX, frameHeight-btnSendY);
+//				btnStartStop.setLocation(frameWidth-btnStartStopX, frameHeight-btnStartStopY);
 				chckbxAutoscroll.setLocation(frameWidth-chckbxAutoscrollX, frameHeight-chckbxAutoscrollY);
 			}
 		});
@@ -355,21 +357,6 @@ public class Terminal
 			
 		}
 		
-		
-
-		
-		if(payloadData.timeStamp >= lastRecivedTime && !goodData)
-		{
-			goodDataButton.setForeground(Color.GREEN);
-			goodDataButton.setBackground(Color.GREEN);
-			goodData = true;
-		}
-		if(payloadData.timeStamp < lastRecivedTime && goodData)
-		{
-			goodDataButton.setForeground(Color.RED);
-			goodDataButton.setBackground(Color.RED);
-			goodData = false;
-		}
 		lastRecivedTime = payloadData.timeStamp;
 		
 		if(goodData)

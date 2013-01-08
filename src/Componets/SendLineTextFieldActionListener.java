@@ -1,43 +1,27 @@
 package Componets;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import javax.swing.JTextField;
+import Data.Command;
+import Events.CompleteSendEvent;
+import Events.ICompleteSendEventListener;
+import Main.DataController;
 
-public class SendLineTextFieldActionListener implements KeyListener
+public class SendLineTextFieldActionListener
 {
 
-	
-	public SendLineTextFieldActionListener(JTextField sendLine)
+	public SendLineTextFieldActionListener(Command command)
 	{
+		
 
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_ENTER)
-		{
-//			sendString = sendLine.getText() + "\n";
-//			sendLine.setText("");
-//			CompleteSendEvent complete = new CompleteSendEvent(this);
-//			Object[] listeners = DataController.listenerList.getListenerList(); 
-//	   		for (int i=0; i<listeners.length; i+=2) 
-//	   		{
-//	             if (listeners[i]==ICompleteSendEventListener.class)
-//	             {
-//	                 ((ICompleteSendEventListener)listeners[i+1]).completeSendEventHandler(complete);
-//	             }
-//	        } 
-		}
-	}
-	
-	@Override
-	public void keyTyped(KeyEvent e) 
-	{	
-	}
-	@Override
-	public void keyReleased(KeyEvent e) 
-	{
+			CompleteSendEvent complete = new CompleteSendEvent(this, null);
+			
+			Object[] listeners = DataController.listenerList.getListenerList(); 
+	   		for (int i=0; i<listeners.length; i+=2) 
+	   		{
+	             if (listeners[i]==ICompleteSendEventListener.class)
+	             {
+	                 ((ICompleteSendEventListener)listeners[i+1]).completeSendEventHandler(complete);
+	             }
+	        } 
 	}
 }
 

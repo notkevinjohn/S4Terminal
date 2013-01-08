@@ -1,6 +1,8 @@
-package Componets;
+package NoLongerUsed;
 
 import javax.swing.JTextField;
+
+//import Componets.SendLineTextFieldActionListener;
 
 public class SendLineTextField extends JTextField
 {
@@ -17,8 +19,8 @@ public class SendLineTextField extends JTextField
 	{
 		if(!actionListenerSet)
 		{
-			this.addKeyListener( new SendLineTextFieldActionListener(this));
-			actionListenerSet = true;
+//			this.addKeyListener( new SendLineTextFieldActionListener(this));
+//			actionListenerSet = true;
 		}
 	}
 }

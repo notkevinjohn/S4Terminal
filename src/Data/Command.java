@@ -10,6 +10,7 @@ public class Command implements Serializable
 	 * 
 	 */
 	private static final long serialVersionUID = -6747567172135677536L;
+	
 	public long timeStamp = 0;
 	public String payloadName = null;
 	public String terminalName = null;
