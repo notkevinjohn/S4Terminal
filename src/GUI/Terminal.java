@@ -17,7 +17,6 @@ import Componets.GraphButtonMenuItem;
 import Componets.OpenCommandMenuItem;
 import Componets.SendButton;
 import Componets.SetDataMenuItem;
-import Componets.StartStopButton;
 import Componets.TerminalText;
 import Data.PayloadData;
 import Events.IPayloadUpdateDataEventListener;
@@ -28,8 +27,6 @@ import Graphs.TimeGraph;
 import Main.DataController;
 import NoLongerUsed.SendLineTextField;
 import java.awt.Color;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import org.jfree.chart.ChartPanel;
@@ -41,17 +38,37 @@ import javax.swing.JMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.RowSpec;
+import java.awt.BorderLayout;
 
 
 public class Terminal 
 {
-	public static javax.swing.event.EventListenerList listenerList = new javax.swing.event.EventListenerList();
 	private JScrollPane scrollPane;
-	private JPanel panel;
 	private JPanel contentPane;
-	private StartStopButton btnStartStop;
 	private AutoscrollCheckBox chckbxAutoscroll;
 	private JFrame frame;
+	private SimpleAttributeSet green = new SimpleAttributeSet();
+	private SimpleAttributeSet blue = new SimpleAttributeSet();
+	private OpenCommandMenuItem openCommand;
+	private JMenuBar menuBar;
+	private JMenu mnGraph;
+	private ButtonGroup graph;
+	private JProgressBar batteryStatus;
+	private JLabel lblSignal;
+	private JLabel lblBattery;
+	private DataController dataController;
+	private JPanel infoPanel;
+	private JPanel DataContainer;
+	private boolean graphSet = false;
+	
+	public static javax.swing.event.EventListenerList listenerList = new javax.swing.event.EventListenerList();
 	public TerminalText terminalText;
 	public SendButton btnSend;
 	public String textSend;
@@ -64,15 +81,9 @@ public class Terminal
 	public XYSeries series;
 	public ChartPanel CP;
 	public JFreeChart chart;
-	private SimpleAttributeSet green = new SimpleAttributeSet();
-	private SimpleAttributeSet blue = new SimpleAttributeSet();
 	public boolean enableGraph = true;
 	public TimeGraph timeGraph;
-	private JMenuBar menuBar;
-	private JMenu mnGraph;
-	private OpenCommandMenuItem openCommand;
-	private boolean graphSet = false;
-	private ButtonGroup graph;
+	
 	public boolean dataSet = false;
 	public JMenuItem mntmOpenGui;
 	public SetDataMenuItem setDataMenuItem;
@@ -80,10 +91,7 @@ public class Terminal
     public long lastRecivedTime = 0;
     public boolean goodData = true;    
 	public JProgressBar signalStrength;
-	private JProgressBar batteryStatus;
-	private JLabel lblSignal;
-	private JLabel lblBattery;
-	private DataController dataController;
+	
 	
 	public Terminal(String deviceName, DataController dataController)
 	{
@@ -119,159 +127,126 @@ public class Terminal
 	{
 		String terminalName = "Terminal Payload -- " + deviceName;
 		frame = new JFrame(terminalName);
+		frame.setBackground(Color.WHITE);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBounds(100, 100, 640, 630);
+		frame.setBounds(100, 100, 764, 736);
 		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBackground(Color.WHITE);
+		contentPane.setForeground(Color.WHITE);
+		contentPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 		frame.setContentPane(contentPane);
-		contentPane.setLayout(null);
-		frame.setMinimumSize(new Dimension(400,300));
+		frame.setMinimumSize(new Dimension(400,500));
 		
-		panel = new JPanel();
-		panel.setBackground(Color.WHITE);
-		panel.setSize(632,603);
-		panel.setLocation(0,0);
-		contentPane.add(panel);
-		panel.setLayout(null);
-		
-			
-		scrollPane = new JScrollPane();
-		scrollPane.setSize(493,558);
-		scrollPane.setLocation(0,21);
-		panel.add(scrollPane);
-		
-		final int scrollPaneX = panel.getWidth()-scrollPane.getWidth();
-		final int scrollPaneY = panel.getHeight()-scrollPane.getHeight();
-		
-		terminalText = new TerminalText(terminalText);
-		terminalText.setEditable(false);
-		terminalText.setBackground(Color.WHITE);
-		scrollPane.setViewportView(terminalText);
-		doc = terminalText.getStyledDocument();
-		
-
-		chckbxAutoscroll = new AutoscrollCheckBox(terminalText);
-		chckbxAutoscroll.setBackground(Color.WHITE);
-		chckbxAutoscroll.setSelected(true);
-		chckbxAutoscroll.setSize(92,23);
-		chckbxAutoscroll.setLocation(515,556);
-		panel.add(chckbxAutoscroll);
-		chckbxAutoscroll.setActionListener();
-		terminalText.setActionListener(terminalText,chckbxAutoscroll);
-		
-
-		
-		
-
-//		sendLine = new SendLineTextField();
-//		sendLine.setSize(248,23);
-//		sendLine.setLocation(10,556);
-//		panel.add(sendLine);
-//		sendLine.setActionListener();
-////		
-////		final int sendLineX = sendLine.getX();
-//		final int sendLineXresize = panel.getWidth()-sendLine.getWidth();
-//		final int sendLineY =  panel.getHeight()-sendLine.getY();
-//
-//		
-//		btnSend = new SendButton(sendLine);
-//		btnSend.setSize(75,23);
-//		btnSend.setLocation(268,556);
-//		panel.add(btnSend);
-//		btnSend.setActionListener();
-//		
-//		final int btnSendX = panel.getWidth()-btnSend.getX();
-//		final int btnSendY = panel.getHeight()-btnSend.getY();
-		
-//		btnStartStop = new StartStopButton();
-//		btnStartStop.setSize(75,23);
-//		btnStartStop.setLocation(353,556);
-//		panel.add(btnStartStop);
-//		
+		GridBagLayout gbl_contentPane = new GridBagLayout();
+		gbl_contentPane.columnWidths = new int[]{742, 0};
+		gbl_contentPane.rowHeights = new int[]{27, 665, 0};
+		gbl_contentPane.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_contentPane.rowWeights = new double[]{0.0, 100.0, Double.MIN_VALUE};
+		contentPane.setLayout(gbl_contentPane);
+								
+		JPanel MenuContainer = new JPanel();
+		MenuContainer.setBorder(null);
+		MenuContainer.setLayout(new BorderLayout(0, 0));
+				
 		menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 622, 21);
-		panel.add(menuBar);
-		
+		MenuContainer.add(menuBar);
+										
 		mnGraph = new JMenu("Graph");
 		menuBar.add(mnGraph);
-		
+										
 		JMenu mnData = new JMenu("Data");
 		menuBar.add(mnData);
-		
-		
+										
+										
 		dataGUIMenuItem = new DataGUIMenuItem(this,"Open GUI");
 		mnData.add(dataGUIMenuItem);
 		dataGUIMenuItem.setActionListener();
-		
+										
 		JMenu mnCommand = new JMenu("Command");
 		menuBar.add(mnCommand);
-		
+										
 		openCommand = new OpenCommandMenuItem(this,"Open Command Window");
 		mnCommand.add(openCommand);
 		openCommand.setActionListener(dataController);
 		
-		
-		
-//		Border raisedetched;
-//		raisedetched = BorderFactory.createEtchedBorder(EtchedBorder.RAISED,Color.DARK_GRAY, Color.GRAY);
-//		
-		
-		JLabel lblDataStatus = new JLabel("Data Status");
-		lblDataStatus.setBounds(512, 38, 65, 14);
-		panel.add(lblDataStatus);
-		
+		GridBagConstraints gbc_MenuContainer = new GridBagConstraints();
+		gbc_MenuContainer.fill = GridBagConstraints.BOTH;
+		gbc_MenuContainer.insets = new Insets(0, 0, 5, 0);
+		gbc_MenuContainer.gridx = 0;
+		gbc_MenuContainer.gridy = 0;
+		contentPane.add(MenuContainer, gbc_MenuContainer);
+								
+		DataContainer = new JPanel();
+		DataContainer.setBackground(Color.WHITE);
+		DataContainer.setForeground(Color.WHITE);
+		DataContainer.setLayout(new FormLayout(new ColumnSpec[]{ColumnSpec.decode("max(100dlu;pref):grow"), ColumnSpec.decode("max(79dlu;default)"),},
+		new RowSpec[]{FormFactory.LINE_GAP_ROWSPEC,RowSpec.decode("max(250dlu;pref):grow"),}));
+								
+									
+		scrollPane = new JScrollPane();
+		DataContainer.add(scrollPane, "1, 2, fill, fill");
+								
+		terminalText = new TerminalText(terminalText);
+		scrollPane.setViewportView(terminalText);
+		terminalText.setEditable(false);
+		terminalText.setBackground(Color.WHITE);
+								
+		infoPanel = new JPanel();
+		DataContainer.add(infoPanel, "2, 2, right, fill");
+		infoPanel.setForeground(Color.WHITE);
+		infoPanel.setBackground(Color.WHITE);
+		infoPanel.setLayout(new FormLayout(new ColumnSpec[] 
+		{
+				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+				ColumnSpec.decode("86px"),},
+				new RowSpec[] 
+					{
+						RowSpec.decode("fill:10dlu"),
+						RowSpec.decode("150px"),
+						FormFactory.RELATED_GAP_ROWSPEC,
+						RowSpec.decode("max(13dlu;default)"),
+						RowSpec.decode("max(150px;default)"),
+						FormFactory.RELATED_GAP_ROWSPEC,
+						RowSpec.decode("10dlu"),
+						FormFactory.RELATED_GAP_ROWSPEC,
+						RowSpec.decode("default:grow"),
+						FormFactory.RELATED_GAP_ROWSPEC,
+						RowSpec.decode("max(21dlu;default)"),
+					}));
+								
+								
 		signalStrength = new JProgressBar();
+		infoPanel.add(signalStrength, "2, 2, center, bottom");
 		signalStrength.setOrientation(SwingConstants.VERTICAL);
-		signalStrength.setBounds(515, 63, 11, 127);
-		panel.add(signalStrength);
-		
+								
+		lblSignal = new JLabel("Signal");
+		infoPanel.add(lblSignal, "2, 4, center, top");
+								
 		batteryStatus = new JProgressBar();
+		infoPanel.add(batteryStatus, "2, 5, center, bottom");
 		batteryStatus.setMinimum(2800);
 		batteryStatus.setMaximum(3065);
 		batteryStatus.setOrientation(SwingConstants.VERTICAL);
-		batteryStatus.setBounds(570, 63, 11, 127);
-		panel.add(batteryStatus);
-		
-		lblSignal = new JLabel("Signal");
-		lblSignal.setBounds(504, 201, 46, 14);
-		panel.add(lblSignal);
-		
+								
 		lblBattery = new JLabel("Battery");
-		lblBattery.setBounds(560, 201, 46, 14);
-		panel.add(lblBattery);
-	   
+		infoPanel.add(lblBattery, "2, 7, center, top");
+								
 
+		chckbxAutoscroll = new AutoscrollCheckBox(terminalText);
+		infoPanel.add(chckbxAutoscroll, "2, 11");
+		terminalText.setActionListener(terminalText,chckbxAutoscroll);
+		chckbxAutoscroll.setActionListener();
+		chckbxAutoscroll.setBackground(Color.WHITE);
+		chckbxAutoscroll.setSelected(true);
 		
-//		btnStartStop.setActionListener();
-//		
+		GridBagConstraints gbc_DataContainer = new GridBagConstraints();
+		gbc_DataContainer.fill = GridBagConstraints.BOTH;
+		gbc_DataContainer.gridx = 0;
+		gbc_DataContainer.gridy = 1;
+		contentPane.add(DataContainer, gbc_DataContainer);
 		
-		
-//		
-//		final int btnStartStopX = panel.getWidth()-btnStartStop.getX();
-//		final int btnStartStopY = panel.getHeight()-btnStartStop.getY();
-//		
-
-		final int chckbxAutoscrollX = panel.getWidth()-chckbxAutoscroll.getX();
-		final int chckbxAutoscrollY = panel.getHeight()-chckbxAutoscroll.getY();
-		
-		frame.getContentPane().addComponentListener(new ComponentAdapter() 
-		{
-			public void componentResized(ComponentEvent arg0) 
-			{
-				int frameWidth= panel.getWidth();
-				int frameHeight = panel.getHeight();
-				
-				panel.setSize(frame.getContentPane().getSize());
-				scrollPane.setSize(frameWidth-scrollPaneX, frameHeight-scrollPaneY);
-//				sendLine.setSize(frameWidth-sendLineXresize,sendLine.getHeight());
-//				
-//				sendLine.setLocation(sendLineX, frameHeight-sendLineY);
-//				btnSend.setLocation(frameWidth-btnSendX, frameHeight-btnSendY);
-//				btnStartStop.setLocation(frameWidth-btnStartStopX, frameHeight-btnStartStopY);
-				chckbxAutoscroll.setLocation(frameWidth-chckbxAutoscrollX, frameHeight-chckbxAutoscrollY);
-			}
-		});
+		doc = terminalText.getStyledDocument();
 		
 		frame.addWindowListener(new WindowListener() 
 		{
@@ -295,85 +270,41 @@ public class Terminal
 				System.exit(0);
 			}
 		});	
-		
-		
-		//timeGraph = new TimeGraph();
 }
 
 	public void updateText(String _StreamInString, SimpleAttributeSet type)
 	{
-		
-		
 		try
 		{
 			doc.insertString(doc.getLength(),_StreamInString, type);
-			//System.out.print(updateString);
 		}
 		catch(Exception e) 
 		{ 
-			System.out.println(e);
+			e.printStackTrace();
 		}	
 	}
 	
 	public void updatePayloadData(PayloadData payloadData)
 	{
+		lastRecivedTime = payloadData.timeStamp;
 		
 		if(!graphSet)
 		{
-			int commas = 0;
-			for(int i = 0; i < payloadData.scienceData.length(); i++)
-			{
-				if(payloadData.scienceData.charAt(i) == ',')
-					commas++;
-			}
-			
-			graph = new ButtonGroup();
-			int start = 2;
-			int end = payloadData.scienceData.indexOf(',',2);
-			
-			for(int j = 0; j < commas/2; j++)
-			{
-				
-				String tempString = payloadData.scienceData.substring(start, end);
-				GraphButtonMenuItem graphType = new GraphButtonMenuItem(this, tempString,j);
-				
-				start = payloadData.scienceData.indexOf(',', start)+1;
-				end = payloadData.scienceData.indexOf(',',start);
-				start = payloadData.scienceData.indexOf(',', start)+1;
-				end = payloadData.scienceData.indexOf(',',start);
-				
-				if(end <0)
-				{
-					end = payloadData.scienceData.length();
-				}
-				graphType.setActionListener();
-				graph.add(graphType);
-				mnGraph.add(graphType);
-				
-			}
-			
-			graphSet = true;
-			//timeGraph = new TimeGraph(deviceName, deviceName, deviceName, 1);
-			
+			CreateGraphList(payloadData);
 		}
-		
-		lastRecivedTime = payloadData.timeStamp;
-		
-		if(goodData)
+
+		try
 		{
-			try
-			{
-				String tempGPS = payloadData.gpsData;
-				String tempSensor = payloadData.scienceData + "\n";
-				doc.insertString(doc.getLength(),tempGPS, blue);
-				doc.insertString(doc.getLength(), tempSensor, green);
-				
-				//System.out.print(updateString);
-			}
-			catch(Exception e) 
-			{ 
-				System.out.println(e);
-			}
+			
+			String tempGPS = payloadData.gpsData;
+			String tempSensor = payloadData.scienceData + "\n";
+			doc.insertString(doc.getLength(),tempGPS, blue);
+			doc.insertString(doc.getLength(), tempSensor, green);
+			System.out.println(tempGPS);
+		}
+		catch(Exception e) 
+		{ 
+			e.printStackTrace();
 		}
 		
 		
@@ -413,15 +344,42 @@ public class Terminal
 			long temp2 = Long.parseLong(payloadData.brodcastMessage.BatteryVoltage,16);
 			int tempVal2 = (int) (temp2); // needs to be addressed for min and max
 			batteryStatus.setValue(tempVal2);
+		}	
+	}
+	
+	public void CreateGraphList (PayloadData payloadData)
+	{
+		int commas = 0;
+		for(int i = 0; i < payloadData.scienceData.length(); i++)
+		{
+			if(payloadData.scienceData.charAt(i) == ',')
+				commas++;
 		}
 		
+		graph = new ButtonGroup();
+		int start = 2;
+		int end = payloadData.scienceData.indexOf(',',2);
 		
-		
-		
-		
-		
-		
-		
+		for(int j = 0; j < commas/2; j++)
+		{
+			
+			String tempString = payloadData.scienceData.substring(start, end);
+			GraphButtonMenuItem graphType = new GraphButtonMenuItem(this, tempString,j);
+			
+			start = payloadData.scienceData.indexOf(',', start)+1;
+			end = payloadData.scienceData.indexOf(',',start);
+			start = payloadData.scienceData.indexOf(',', start)+1;
+			end = payloadData.scienceData.indexOf(',',start);
+			
+			if(end <0)
+			{
+				end = payloadData.scienceData.length();
+			}
+			graphType.setActionListener();
+			graph.add(graphType);
+			mnGraph.add(graphType);
+		}
+		graphSet = true;
 	}
 	
 	public static void addPayloadUpdateEvent (IPayloadUpdateUpdateGraphEventListener completePayloadUpdateEventListener)
